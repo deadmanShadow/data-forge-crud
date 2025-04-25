@@ -1,7 +1,7 @@
 "use client";
-
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import LoadingSpinner from "./components/LoadingSpinner";
@@ -14,6 +14,7 @@ interface IdataForge {
 
 export default function Home() {
   const [dataforge, setDataForge] = useState<IdataForge[]>([]);
+  const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setIsError] = useState<string | null>(null);
 
@@ -93,13 +94,13 @@ export default function Home() {
                   href={`/edit/${dataforge.$id}`}
                   className="bg-slate-200 hover:bg-slate-300 px-4 py-2 rounded-md uppercase text-sm font-semibold tracking-widest"
                 >
-                  Edit
+                  {t("edit")}
                 </Link>
                 <button
                   onClick={() => handleDelete(dataforge.$id)}
                   className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md uppercase text-sm font-semibold tracking-widest"
                 >
-                  Delete
+                  {t("delete")}
                 </button>
               </div>
             </div>

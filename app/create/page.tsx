@@ -1,12 +1,14 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, useState } from "react";
+import { useTranslation } from "react-i18next";
 import LoadingSpinner from "../components/LoadingSpinner";
 
 export default function CreatePage() {
   const [formData, setFormData] = useState({ term: "", dataforge: "" });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { t } = useTranslation();
   const router = useRouter();
   const handleInputChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -48,7 +50,7 @@ export default function CreatePage() {
   return (
     <div className="max-w-xl mx-auto mt-12 bg-white p-8 rounded-2xl shadow-lg">
       <h2 className="text-3xl font-extrabold text-emerald-700 mb-6 text-center">
-        Add New Data
+        {t("addNew")}
       </h2>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-5">
@@ -57,7 +59,7 @@ export default function CreatePage() {
             htmlFor="term"
             className="block text-sm font-semibold text-gray-600 mb-1"
           >
-            Term
+            {t("term")}
           </label>
           <input
             type="text"
@@ -74,7 +76,7 @@ export default function CreatePage() {
             htmlFor="dataforge"
             className="block text-sm font-semibold text-gray-600 mb-1"
           >
-            Data Forge Collection
+            {t("dataForge")}
           </label>
           <textarea
             onChange={handleInputChange}
@@ -92,7 +94,7 @@ export default function CreatePage() {
           disabled={isLoading}
           className="bg-emerald-600 hover:bg-emerald-700 transition-colors text-white font-semibold py-2 px-6 rounded-lg shadow-md"
         >
-          {isLoading ? <LoadingSpinner /> : "Add Data"}
+          {isLoading ? <LoadingSpinner /> : t("addNew")}
         </button>
       </form>
       {error && <p className="text-red-500 mt-4">{error}</p>}

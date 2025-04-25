@@ -2,11 +2,13 @@
 import LoadingSpinner from "@/app/components/LoadingSpinner";
 import { useParams, useRouter } from "next/navigation";
 import { ChangeEvent, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 
 export default function EditPage() {
   const { id } = useParams();
   const router = useRouter();
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({ term: "", dataforge: "" });
   const [isLoading, setIsLoading] = useState(true);
   const [isUpdating, setIsUpdating] = useState(false);
@@ -75,7 +77,7 @@ export default function EditPage() {
   return (
     <div className="max-w-xl mx-auto mt-12 bg-white p-8 rounded-2xl shadow-lg">
       <h2 className="text-3xl font-extrabold text-emerald-700 mb-6 text-center">
-        Edit Data
+        {t("edit")}
       </h2>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-5">
@@ -84,7 +86,7 @@ export default function EditPage() {
             htmlFor="term"
             className="block text-sm font-semibold text-gray-600 mb-1"
           >
-            Term
+            {t("term")}
           </label>
           <input
             type="text"
@@ -102,7 +104,7 @@ export default function EditPage() {
             htmlFor="dataforge"
             className="block text-sm font-semibold text-gray-600 mb-1"
           >
-            Data Forge Collection
+            {t("dataForge")}
           </label>
           <textarea
             name="dataforge"
@@ -120,7 +122,7 @@ export default function EditPage() {
           disabled={isUpdating}
           className="bg-emerald-600 hover:bg-emerald-700 transition-colors text-white font-semibold py-2 px-6 rounded-lg shadow-md"
         >
-          {isUpdating ? <LoadingSpinner /> : "Update Data"}
+          {isUpdating ? <LoadingSpinner /> : t("edit")}
         </button>
       </form>
     </div>
