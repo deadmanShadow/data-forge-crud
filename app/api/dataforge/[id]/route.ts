@@ -1,11 +1,10 @@
 import client from "@/lib/appwrite_client";
 import { Databases } from "appwrite";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 const database = new Databases(client);
 
-//fetch a specific data
-
+// fetch a specific data
 async function fetchDataForge(id: string) {
   try {
     const dataforge = await database.getDocument(
@@ -14,14 +13,13 @@ async function fetchDataForge(id: string) {
       id
     );
     return dataforge;
-  } catch {
-    console.error("Error fetching data:");
-    throw new Error();
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    throw new Error("Failed to fetch data");
   }
 }
 
 // delete a specific data
-
 async function deleteDataForge(id: string) {
   try {
     const response = await database.deleteDocument(
@@ -30,14 +28,13 @@ async function deleteDataForge(id: string) {
       id
     );
     return response;
-  } catch {
-    console.error("Error deleting data:");
-    throw new Error();
+  } catch (error) {
+    console.error("Error deleting data:", error);
+    throw new Error("Failed to delete data");
   }
 }
 
-//update a specific data
-
+// update a specific data
 async function updateDataForge(
   id: string,
   data: { term: string; dataforge: string }
@@ -50,40 +47,43 @@ async function updateDataForge(
       data
     );
     return response;
-  } catch {
-    console.error("Error deleting data:");
-    throw new Error();
+  } catch (error) {
+    console.error("Error updating data:", error);
+    throw new Error("Failed to update data");
   }
 }
 
+// fetch specific data
 export async function GET(
-  req: Request,
+  req: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
     const id = params.id;
     const dataforge = await fetchDataForge(id);
     return NextResponse.json(dataforge);
-  } catch {
-    return NextResponse.json({ error: "Error fetching data" }, { status: 500 });
+  } catch (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
 
+//  delete specific data
 export async function DELETE(
-  req: Request,
+  req: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
     const id = params.id;
     await deleteDataForge(id);
     return NextResponse.json({ message: "Data deleted successfully" });
-  } catch {
-    return NextResponse.json({ error: "Failed to delete" }, { status: 500 });
+  } catch (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
 
+//  update specific data
 export async function PUT(
-  req: Request,
+  req: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
@@ -91,7 +91,7 @@ export async function PUT(
     const dataforge = await req.json();
     await updateDataForge(id, dataforge);
     return NextResponse.json({ message: "Data updated successfully" });
-  } catch {
-    return NextResponse.json({ error: "Failed to update" }, { status: 500 });
+  } catch (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
