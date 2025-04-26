@@ -53,11 +53,10 @@ async function updateDataForge(
 // get by id
 export async function GET(
   req: NextRequest,
-  context: { params?: { id?: string } }
+  { params }: { params: { id: string } }
 ) {
   try {
-    const id = context.params?.id;
-    if (!id) throw new Error("Missing ID parameter");
+    const id = params.id;
     const dataforge = await fetchDataForge(id);
     return NextResponse.json(dataforge);
   } catch (error: any) {
@@ -65,15 +64,13 @@ export async function GET(
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
-
-// delete by id
+//delete by id
 export async function DELETE(
   req: NextRequest,
-  context: { params?: { id?: string } }
+  { params }: { params: { id: string } }
 ) {
   try {
-    const id = context.params?.id;
-    if (!id) throw new Error("Missing ID parameter");
+    const id = params.id;
     await deleteDataForge(id);
     return NextResponse.json({ message: "Data deleted successfully" });
   } catch (error: any) {
@@ -81,15 +78,13 @@ export async function DELETE(
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
-
 // update by id
 export async function PUT(
   req: NextRequest,
-  context: { params?: { id?: string } }
+  { params }: { params: { id: string } }
 ) {
   try {
-    const id = context.params?.id;
-    if (!id) throw new Error("Missing ID parameter");
+    const id = params.id;
     const body = await req.json();
     await updateDataForge(id, body);
     return NextResponse.json({ message: "Data updated successfully" });
