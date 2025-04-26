@@ -7,12 +7,11 @@ const database = new Databases(client);
 // fetch a specific data
 async function fetchDataForge(id: string) {
   try {
-    const dataforge = await database.getDocument(
+    return await database.getDocument(
       process.env.NEXT_PUBLIC_APPWRITE_DBID as string,
       "dataforge",
       id
     );
-    return dataforge;
   } catch (error) {
     console.error("Error fetching data:", error);
     throw new Error("Failed to fetch data");
@@ -22,12 +21,11 @@ async function fetchDataForge(id: string) {
 // delete a specific data
 async function deleteDataForge(id: string) {
   try {
-    const response = await database.deleteDocument(
+    return await database.deleteDocument(
       process.env.NEXT_PUBLIC_APPWRITE_DBID as string,
       "dataforge",
       id
     );
-    return response;
   } catch (error) {
     console.error("Error deleting data:", error);
     throw new Error("Failed to delete data");
@@ -40,58 +38,63 @@ async function updateDataForge(
   data: { term: string; dataforge: string }
 ) {
   try {
-    const response = await database.updateDocument(
+    return await database.updateDocument(
       process.env.NEXT_PUBLIC_APPWRITE_DBID as string,
       "dataforge",
       id,
       data
     );
-    return response;
   } catch (error) {
     console.error("Error updating data:", error);
     throw new Error("Failed to update data");
   }
 }
 
-// fetch specific data
+// get by id
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params?: { id?: string } }
 ) {
   try {
-    const id = params.id;
+    const id = context.params?.id;
+    if (!id) throw new Error("Missing ID parameter");
     const dataforge = await fetchDataForge(id);
     return NextResponse.json(dataforge);
-  } catch (error) {
+  } catch (error: any) {
+    console.error("GET error:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
 
-//  delete specific data
+// delete by id
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params?: { id?: string } }
 ) {
   try {
-    const id = params.id;
+    const id = context.params?.id;
+    if (!id) throw new Error("Missing ID parameter");
     await deleteDataForge(id);
     return NextResponse.json({ message: "Data deleted successfully" });
-  } catch (error) {
+  } catch (error: any) {
+    console.error("DELETE error:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
 
-//  update specific data
+// update by id
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params?: { id?: string } }
 ) {
   try {
-    const id = params.id;
-    const dataforge = await req.json();
-    await updateDataForge(id, dataforge);
+    const id = context.params?.id;
+    if (!id) throw new Error("Missing ID parameter");
+    const body = await req.json();
+    await updateDataForge(id, body);
     return NextResponse.json({ message: "Data updated successfully" });
-  } catch (error) {
+  } catch (error: any) {
+    console.error("PUT error:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
