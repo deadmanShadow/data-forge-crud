@@ -1,8 +1,11 @@
 import client from "@/lib/appwrite_client";
 import { Databases } from "appwrite";
 import { NextRequest, NextResponse } from "next/server";
-
 const database = new Databases(client);
+function extractIdFromUrl(req: NextRequest): string | null {
+  const segments = req.nextUrl.pathname.split("/");
+  return segments[segments.length - 1] || null;
+}
 
 // fetch a specific data
 async function fetchDataForge(id: string) {
@@ -50,13 +53,14 @@ async function updateDataForge(
   }
 }
 
-// get by id
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+// get
+export async function GET(req: NextRequest) {
+  const id = extractIdFromUrl(req);
+  if (!id) {
+    return NextResponse.json({ error: "Missing ID" }, { status: 400 });
+  }
+
   try {
-    const id = params.id;
     const dataforge = await fetchDataForge(id);
     return NextResponse.json(dataforge);
   } catch (error: any) {
@@ -64,13 +68,15 @@ export async function GET(
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
-//delete by id
-export async function DELETE(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+
+// delete
+export async function DELETE(req: NextRequest) {
+  const id = extractIdFromUrl(req);
+  if (!id) {
+    return NextResponse.json({ error: "Missing ID" }, { status: 400 });
+  }
+
   try {
-    const id = params.id;
     await deleteDataForge(id);
     return NextResponse.json({ message: "Data deleted successfully" });
   } catch (error: any) {
@@ -78,13 +84,15 @@ export async function DELETE(
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
-// update by id
-export async function PUT(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+
+// PUT
+export async function PUT(req: NextRequest) {
+  const id = extractIdFromUrl(req);
+  if (!id) {
+    return NextResponse.json({ error: "Missing ID" }, { status: 400 });
+  }
+
   try {
-    const id = params.id;
     const body = await req.json();
     await updateDataForge(id, body);
     return NextResponse.json({ message: "Data updated successfully" });

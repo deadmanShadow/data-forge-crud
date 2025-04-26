@@ -1,26 +1,29 @@
 import client from "@/lib/appwrite_client";
 import { Databases, ID, Query } from "appwrite";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 const database = new Databases(client);
+function extractIdFromUrl(req: NextRequest): string | null {
+  const segments = req.nextUrl.pathname.split("/");
+  return segments[segments.length - 2] || null;
+}
 
-// create a new docs
+// create document
 async function createDataForge(data: { term: string; dataforge: string }) {
   try {
-    const response = await database.createDocument(
+    return await database.createDocument(
       process.env.NEXT_PUBLIC_APPWRITE_DBID as string,
       "dataforge",
       ID.unique(),
       data
     );
-    return response;
   } catch (error) {
     console.error("Error creating data:", error);
-    throw new Error();
+    throw new Error("Failed to create data");
   }
 }
 
-// list all docs
+// all documents
 async function fetchAllDataForge() {
   try {
     const response = await database.listDocuments(
@@ -31,88 +34,85 @@ async function fetchAllDataForge() {
     return response.documents;
   } catch (error) {
     console.error("Error fetching data:", error);
-    throw new Error();
+    throw new Error("Failed to fetch all documents");
   }
 }
 
-// get a single document by id
+// fetch a single document
 async function fetchDataForgeById(id: string) {
   try {
-    const document = await database.getDocument(
+    return await database.getDocument(
       process.env.NEXT_PUBLIC_APPWRITE_DBID as string,
       "dataforge",
       id
     );
-    return document;
   } catch (error) {
     console.error("Error fetching document by ID:", error);
-    throw new Error();
+    throw new Error("Failed to fetch document by ID");
   }
 }
 
-// delete a document by id
+// delete a document
 async function deleteDataForgeById(id: string) {
   try {
-    await database.deleteDocument(
+    return await database.deleteDocument(
       process.env.NEXT_PUBLIC_APPWRITE_DBID as string,
       "dataforge",
       id
     );
   } catch (error) {
     console.error("Error deleting document:", error);
-    throw new Error();
+    throw new Error("Failed to delete document");
   }
 }
 
-// post data
-export async function POST(req: Request) {
+// post create a doc
+export async function POST(req: NextRequest) {
   try {
     const { term, dataforge } = await req.json();
     await createDataForge({ term, dataforge });
     return NextResponse.json({ message: "Data created successfully" });
-  } catch {
-    return NextResponse.json({ error: "Error creating data" }, { status: 500 });
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
 
-// get list all
-export async function GET() {
+// fetch all docs
+export async function GET(req: NextRequest) {
   try {
     const dataforge = await fetchAllDataForge();
     return NextResponse.json(dataforge);
-  } catch {
-    return NextResponse.json({ error: "Error fetching data" }, { status: 500 });
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
 
-// fetch by id
-export async function GET_BY_ID(
-  req: Request,
-  { params }: { params: { id: string } }
-) {
+// get specific doc by id
+export async function GET_BY_ID(req: NextRequest) {
+  const id = extractIdFromUrl(req);
+  if (!id) {
+    return NextResponse.json({ error: "Missing ID" }, { status: 400 });
+  }
+
   try {
-    const document = await fetchDataForgeById(params.id);
+    const document = await fetchDataForgeById(id);
     return NextResponse.json(document);
-  } catch {
-    return NextResponse.json(
-      { error: "Error fetching document" },
-      { status: 500 }
-    );
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
 
-// delete an id
-export async function DELETE_BY_ID(
-  req: Request,
-  { params }: { params: { id: string } }
-) {
+// delete specific doc by id
+export async function DELETE_BY_ID(req: NextRequest) {
+  const id = extractIdFromUrl(req);
+  if (!id) {
+    return NextResponse.json({ error: "Missing ID" }, { status: 400 });
+  }
+
   try {
-    await deleteDataForgeById(params.id);
+    await deleteDataForgeById(id);
     return NextResponse.json({ message: "Document deleted successfully" });
-  } catch {
-    return NextResponse.json(
-      { error: "Error deleting document" },
-      { status: 500 }
-    );
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
