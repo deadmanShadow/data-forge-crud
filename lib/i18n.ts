@@ -31,15 +31,6 @@ i18n
           delete: "মুছে ফেলুন",
         },
       },
-      arb: {
-        translation: {
-          term: "مصطلح",
-          dataForge: "مجموعة داتا فورج",
-          addNew: "إضافة جديدة",
-          edit: "تعديل",
-          delete: "حذف",
-        },
-      },
     },
     detection: {
       order: ["localStorage", "navigator"],

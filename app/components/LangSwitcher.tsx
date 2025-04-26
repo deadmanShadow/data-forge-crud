@@ -23,7 +23,6 @@ export default function LanguageSwitcher() {
     >
       <option value="en">English</option>
       <option value="bn">বাংলা</option>
-      <option value="arb">العربية</option>
     </select>
   );
 }
